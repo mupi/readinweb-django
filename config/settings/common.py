@@ -46,6 +46,7 @@ LOCAL_APPS = (
     # custom users app
     'readinweb.users.apps.UsersConfig',
     # Your stuff: custom apps go here
+    'readinweb.riw',
 )
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
@@ -83,7 +84,8 @@ FIXTURE_DIRS = (
 
 # EMAIL CONFIGURATION
 # ------------------------------------------------------------------------------
-EMAIL_BACKEND = env('DJANGO_EMAIL_BACKEND', default='django.core.mail.backends.smtp.EmailBackend')
+# EMAIL_BACKEND = env('DJANGO_EMAIL_BACKEND', default='django.core.mail.backends.smtp.EmailBackend')
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # MANAGER CONFIGURATION
 # ------------------------------------------------------------------------------
@@ -111,7 +113,7 @@ DATABASES['default']['ATOMIC_REQUESTS'] = True
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 # although not all choices may be available on all operating systems.
 # In a Windows environment this must be set to your system time zone.
-TIME_ZONE = 'UTC-03:00'
+TIME_ZONE = 'America/Sao_Paulo'
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#language-code
 LANGUAGE_CODE = 'en-us'

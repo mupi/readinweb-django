@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% load static %}{% load i18n %}
+{% block title %}Course{% endblock %}
+
+{% block content %}
+
+<div class="container">
+
+    <h2>Courses</h2>
+
+    <div class="list-group">
+        {% for course in course_list %}
+          <a href="{% url 'users:detail' user.username %}" class="list-group-item">
+            <h4 class="list-group-item-heading">{{ course.name }}</h4>
+          </a>
+        {% endfor %}
+
+    </div>
+
+</div>
+
+{% endblock content %}
