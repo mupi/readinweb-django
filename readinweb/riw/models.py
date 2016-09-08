@@ -10,7 +10,7 @@ class Course (models.Model):
 
 class Course_class (models.Model):
     # Foreign Keys
-    course          = models.ForeignKey('Course')
+    course          = models.ForeignKey('Course', related_name='course_classes')
     instructor      = models.ForeignKey('users.User')
 
     title           = models.CharField(max_length=150)
@@ -31,8 +31,8 @@ class Module(models.Model):
 
 class Activity(models.Model):
     # Foreign Keys
-    course          = models.ForeignKey('Course')
-    module          = models.ForeignKey('Module')
+    course          = models.ForeignKey('Course', related_name='activities')
+    module          = models.ForeignKey('Module', related_name='activities')
 
     title           = models.CharField(max_length=150)
     content         = models.TextField()
@@ -46,7 +46,7 @@ class Activity(models.Model):
 
 class Exercise(models.Model):
     # Foreign Keys
-    activity = models.ForeignKey('Activity')
+    activity = models.ForeignKey('Activity', related_name='exercises')
 
     content  = models.TextField()
 
@@ -55,7 +55,7 @@ class Exercise(models.Model):
 
 class Grammar(models.Model):
     # Foreign Keys
-    module  = models.ForeignKey('Module')
+    module  = models.ForeignKey('Module', related_name='grammar')
 
     content = models.TextField()
 
@@ -64,7 +64,7 @@ class Grammar(models.Model):
 
 class Strategy(models.Model):
     # Foreign Keys
-    module  = models.ForeignKey('Module')
+    module  = models.ForeignKey('Module', related_name='strategies')
 
     content = models.TextField()
     reading = models.BooleanField()
@@ -74,7 +74,7 @@ class Strategy(models.Model):
 
 class Functional_word(models.Model):
     # Foreign Keys
-    module      = models.ForeignKey('Module')
+    module      = models.ForeignKey('Module', related_name='functional_words')
 
     word        = models.CharField(max_length=50)
     meaning     = models.CharField(max_length=100)
@@ -85,7 +85,7 @@ class Functional_word(models.Model):
 
 class Glossary(models.Model):
     # Foreign Keys
-    module      = models.ForeignKey('Module')
+    module      = models.ForeignKey('Module', related_name='glossaries')
 
     word        = models.CharField(max_length=50)
     translation = models.CharField(max_length=100)
@@ -96,8 +96,8 @@ class Glossary(models.Model):
 
 class Activity_released(models.Model):
     # Foreign Keys
-    course_class    = models.ForeignKey('Course_class')
-    activity        = models.ForeignKey('activity')
+    course_class    = models.ForeignKey('Course_class', related_name='released_activities')
+    activity        = models.ForeignKey('activity', related_name='released_activities')
 
     released        = models.BooleanField(default=False, blank= True)
 
@@ -106,9 +106,9 @@ class Activity_released(models.Model):
 
 class Student_progress(models.Model):
     # Foreign Keys
-    student         = models.ForeignKey('users.User')
-    activity        = models.ForeignKey('Activity')
-    course_class    = models.ForeignKey('Course_class')
+    student         = models.ForeignKey('users.User', related_name='students_progresss')
+    activity        = models.ForeignKey('Activity', related_name='students_progress')
+    course_class    = models.ForeignKey('Course_class', related_name='students_progress')
 
     complete        = models.BooleanField(default=False, blank= True)
 
