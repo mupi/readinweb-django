@@ -1,7 +1,9 @@
 from django.db import models
+from django.utils import timezone
 
 class Course (models.Model):
-    name = models.CharField (max_length=150)
+    name        = models.CharField (max_length=150)
+    description = models.TextField()
     def __str__(self) :
         return self.name
 
@@ -12,11 +14,11 @@ class Course_class (models.Model):
     instructor      = models.ForeignKey('users.User')
 
     title           = models.CharField(max_length=150)
-    created_at      = models.DateTimeField()
+    created_at      = models.DateTimeField(default=timezone.now)
     started_at      = models.DateTimeField(null=True, blank= True)
     finished_at     = models.DateTimeField(null=True, blank= True)
     enrolling       = models.BooleanField(default=False)
-    max_students    = models.IntegerField()
+    max_students    = models.IntegerField(null=True, blank= True)
 
     class Meta:
         verbose_name_plural = "Course classes"
@@ -34,7 +36,7 @@ class Activity(models.Model):
 
     title           = models.CharField(max_length=150)
     content         = models.TextField()
-    course_position = models.IntegerField()
+    course_position = models.IntegerField(null=True, blank= True)
 
     class Meta:
         verbose_name_plural = "Activities"
@@ -97,7 +99,7 @@ class Activity_released(models.Model):
     course_class    = models.ForeignKey('Course_class')
     activity        = models.ForeignKey('activity')
 
-    released        = models.BooleanField()
+    released        = models.BooleanField(default=False, blank= True)
 
     class Meta:
         verbose_name_plural = "Released Activities"
@@ -108,7 +110,7 @@ class Student_progress(models.Model):
     activity        = models.ForeignKey('Activity')
     course_class    = models.ForeignKey('Course_class')
 
-    complete        = models.BooleanField()
+    complete        = models.BooleanField(default=False, blank= True)
 
     class Meta:
         verbose_name_plural = "Students Progress"
@@ -118,7 +120,7 @@ class Allowed_student(models.Model):
     student         = models.ForeignKey('users.User')
 
     course_class    = models.ForeignKey('Course_class')
-    allowed         = models.BooleanField()
+    allowed         = models.BooleanField(default=True, blank=True)
 
     class Meta:
         verbose_name_plural = "Allowed Students"
