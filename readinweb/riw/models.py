@@ -4,6 +4,7 @@ from django.utils import timezone
 class Course (models.Model):
     name        = models.CharField (max_length=150)
     description = models.TextField()
+
     def __str__(self) :
         return self.name
 
@@ -23,7 +24,13 @@ class Course_class (models.Model):
     class Meta:
         verbose_name_plural = "Course classes"
 
+    def __str__(self) :
+        return self.course.name + " - " + self.title
+
 class Module(models.Model):
+    #Foreign Keys
+    course          = models.ForeignKey('Course', related_name='modules')
+
     title = models.CharField(max_length=100)
 
     def __str__(self) :
@@ -31,7 +38,6 @@ class Module(models.Model):
 
 class Activity(models.Model):
     # Foreign Keys
-    course          = models.ForeignKey('Course', related_name='activities')
     module          = models.ForeignKey('Module', related_name='activities')
 
     title           = models.CharField(max_length=150)
@@ -55,7 +61,7 @@ class Exercise(models.Model):
 
 class Grammar(models.Model):
     # Foreign Keys
-    module  = models.ForeignKey('Module', related_name='grammar')
+    module  = models.ForeignKey('Module', related_name='grammars')
 
     content = models.TextField()
 
@@ -82,7 +88,6 @@ class Functional_word(models.Model):
     class Meta:
         verbose_name_plural = "Functional Words"
 
-
 class Glossary(models.Model):
     # Foreign Keys
     module      = models.ForeignKey('Module', related_name='glossaries')
@@ -93,8 +98,7 @@ class Glossary(models.Model):
     class Meta:
         verbose_name_plural = "Glossaries"
 
-
-class Activity_released(models.Model):
+class Released_activity(models.Model):
     # Foreign Keys
     course_class    = models.ForeignKey('Course_class', related_name='released_activities')
     activity        = models.ForeignKey('activity', related_name='released_activities')
@@ -106,7 +110,7 @@ class Activity_released(models.Model):
 
 class Student_progress(models.Model):
     # Foreign Keys
-    student         = models.ForeignKey('users.User', related_name='students_progresss')
+    student         = models.ForeignKey('users.User', related_name='students_progress')
     activity        = models.ForeignKey('Activity', related_name='students_progress')
     course_class    = models.ForeignKey('Course_class', related_name='students_progress')
 
@@ -117,9 +121,9 @@ class Student_progress(models.Model):
 
 class Allowed_student(models.Model):
     # Foreign Keys
-    student         = models.ForeignKey('users.User')
+    student         = models.ForeignKey('users.User', related_name='allowed_students')
+    course_class    = models.ForeignKey('Course_class', related_name='allowed_students')
 
-    course_class    = models.ForeignKey('Course_class')
     allowed         = models.BooleanField(default=True, blank=True)
 
     class Meta:

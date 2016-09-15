@@ -1,11 +1,14 @@
 from django.shortcuts import render
 from django.views.generic import DetailView, ListView, RedirectView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
+
 from readinweb.users.models import User
 
-from django.contrib.auth.mixins import LoginRequiredMixin
-
 from rest_framework import generics
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.decorators import api_view, json_renderers
+from rest_framework.renderers import JSONRenderer
 
 from .serializers import *
 from .models import *
@@ -14,26 +17,44 @@ from .models import *
 class CourseList(LoginRequiredMixin, generics.ListCreateAPIView):
     queryset = Course.objects.all()
     serializer_class = CourseSerializer
+    ordering = ('name',)
 
 class CourseDetail(LoginRequiredMixin, generics.RetrieveUpdateDestroyAPIView):
     queryset = Course.objects.all()
-    serializer_class = CourseSerializer
+    serializer_class = CourseCompleteSerializer
 
 class UserList(LoginRequiredMixin, generics.ListCreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    ordering = ('name',)
 
 class UserDetail(LoginRequiredMixin, generics.RetrieveUpdateDestroyAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
+@api_view(['POST'])
+@renderer_classes((JSONRenderer,))
+def UserRegister(request):
+    serialized = UserSerializer(data= request.data)
+    if serialized.is_valid():
+        User.objects.create_user(
+            email = serialized.initial_data['email'],
+            username = serialized.initial_data['username'],
+            password = serialized.initial_data['password'],
+            name = serialized.initial_data['name']
+        )
+        return Response(serialized.data, status=status.HTTP_201_CREATED)
+    else:
+        return Response(serialized.serialized._errors, status=status.HTTP_400_BAD_REQUEST)
+
 class Course_classList(LoginRequiredMixin, generics.ListCreateAPIView):
     queryset = Course_class.objects.all()
     serializer_class = Course_classSerializer
+    ordering = ('id',)
 
 class Course_classDetail(LoginRequiredMixin, generics.RetrieveUpdateDestroyAPIView):
     queryset = Course_class.objects.all()
-    serializer_class = Course_classSerializer
+    serializer_class = Course_classCompleteSerializer
 
 class ModuleList(LoginRequiredMixin, generics.ListCreateAPIView):
     queryset = Module.objects.all()
@@ -41,11 +62,12 @@ class ModuleList(LoginRequiredMixin, generics.ListCreateAPIView):
 
 class ModuleDetail(LoginRequiredMixin, generics.RetrieveUpdateDestroyAPIView):
     queryset = Module.objects.all()
-    serializer_class = ModuleSerializer
+    serializer_class = ModuleCompleteSerializer
 
 class ActivityList(LoginRequiredMixin, generics.ListCreateAPIView):
     queryset = Activity.objects.all()
     serializer_class = ActivitySerializer
+    ordering = ('course_position',)
 
 class ActivityDetail(LoginRequiredMixin, generics.RetrieveUpdateDestroyAPIView):
     queryset = Activity.objects.all()
@@ -91,13 +113,13 @@ class GlossaryDetail(LoginRequiredMixin, generics.RetrieveUpdateDestroyAPIView):
     queryset = Glossary.objects.all()
     serializer_class = GlossarySerializer
 
-class Activity_releasedList(LoginRequiredMixin, generics.ListCreateAPIView):
+class Released_activityList(LoginRequiredMixin, generics.ListCreateAPIView):
     queryset = Activity.objects.all()
-    serializer_class = Activity_releasedSerializer
+    serializer_class = Released_activitySerializer
 
-class Activity_releasedDetail(LoginRequiredMixin, generics.RetrieveUpdateDestroyAPIView):
+class Released_activityDetail(LoginRequiredMixin, generics.RetrieveUpdateDestroyAPIView):
     queryset = Activity.objects.all()
-    serializer_class = Activity_releasedSerializer
+    serializer_class = Released_activitySerializer
 
 class Student_progressList(LoginRequiredMixin, generics.ListCreateAPIView):
     queryset = Student_progress.objects.all()
