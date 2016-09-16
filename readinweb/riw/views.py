@@ -7,8 +7,10 @@ from readinweb.users.models import User
 from rest_framework import generics
 from rest_framework import status
 from rest_framework.response import Response
-from rest_framework.decorators import api_view, json_renderers
+from rest_framework.decorators import api_view, renderer_classes
 from rest_framework.renderers import JSONRenderer
+from rest_framework.authtoken.models import Token
+from rest_framework import permissions
 
 from .serializers import *
 from .models import *
@@ -23,29 +25,38 @@ class CourseDetail(LoginRequiredMixin, generics.RetrieveUpdateDestroyAPIView):
     queryset = Course.objects.all()
     serializer_class = CourseCompleteSerializer
 
-class UserList(LoginRequiredMixin, generics.ListCreateAPIView):
+class UserList(generics.ListCreateAPIView):
+    permission_classes = (permissions.IsAuthenticated,)
     queryset = User.objects.all()
     serializer_class = UserSerializer
     ordering = ('name',)
 
-class UserDetail(LoginRequiredMixin, generics.RetrieveUpdateDestroyAPIView):
+class UserDetail(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = (permissions.IsAuthenticated,)
     queryset = User.objects.all()
     serializer_class = UserSerializer
+
 
 @api_view(['POST'])
 @renderer_classes((JSONRenderer,))
 def UserRegister(request):
     serialized = UserSerializer(data= request.data)
     if serialized.is_valid():
-        User.objects.create_user(
+        if (serialized.initial_data['password'] == "" or
+            serialized.initial_data['email'] == "" or
+            serialized.initial_data['name'] == "") :
+            return Response({"error":"All the fields are necessary"}, status=status.HTTP_400_BAD_REQUEST)
+        newUser = User.objects.create_user(
             email = serialized.initial_data['email'],
             username = serialized.initial_data['username'],
             password = serialized.initial_data['password'],
             name = serialized.initial_data['name']
         )
-        return Response(serialized.data, status=status.HTTP_201_CREATED)
+        token = Token.objects.get_or_create(user=newUser)
+        return Response({"token" : token[0].key}, status=status.HTTP_201_CREATED)
     else:
-        return Response(serialized.serialized._errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serialized._errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class Course_classList(LoginRequiredMixin, generics.ListCreateAPIView):
     queryset = Course_class.objects.all()
