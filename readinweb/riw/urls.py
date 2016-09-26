@@ -11,6 +11,7 @@ urlpatterns = [
     url(r'^users/$', models_views.UserList.as_view()),
     url(r'^users/(?P<pk>\d+)/$', models_views.UserDetail.as_view()),
     url(r'^users/register/$', models_views.UserRegister),
+    url(r'^users/login/$', models_views.UserDetailToken.as_view()),
     url(r'^courses/$', models_views.CourseList.as_view()),
     url(r'^courses/(?P<pk>\d+)/$', models_views.CourseDetail.as_view()),
     url(r'^courses_class/$', models_views.Course_classList.as_view()),

@@ -36,11 +36,18 @@ class UserDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
+class UserDetailToken(generics.RetrieveAPIView):
+    permission_classes = (permissions.IsAuthenticated,)
+    renderer_classes = (JSONRenderer,)
+
+    def get(self, request, format=None):
+        serialized = UserSerializer(instance = request.user)
+        return Response(serialized.data, status=status.HTTP_201_CREATED)
 
 @api_view(['POST'])
 @renderer_classes((JSONRenderer,))
 def UserRegister(request):
-    serialized = UserSerializer(data= request.data)
+    serialized = UserSerializer(data = request.data)
     if serialized.is_valid():
         if (serialized.initial_data['password'] == "" or
             serialized.initial_data['email'] == "" or
